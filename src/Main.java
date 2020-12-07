@@ -65,12 +65,13 @@ public class Main {
     private static void potentiallyWorkablePersons(Collection<Person> persons) {
         Stream<Person> stream = persons.stream();
         Comparator<Person> personComparator = Comparator.comparing(Person::getFamily);
-        stream.filter(person -> {
-            int age = person.getAge();
-            if (age < MINOR_AGE || !person.getEducation().equals(Education.HIGHER)) return false;
-            return (person.getSex().equals(Sex.MAN) && age < MAX_PENSION_AGE_MAN)
-                    || (person.getSex().equals(Sex.WOMEN) && age < MAX_PENSION_AGE_WOMEN);
-        })
+        stream.filter(person -> person.getEducation().equals(Education.HIGHER))
+                .filter(person -> person.getAge() > MINOR_AGE)
+                .filter(person -> {
+                    if (person.getSex().equals((Sex.MAN)) && person.getAge() < MAX_PENSION_AGE_MAN) return true;
+                    if (person.getSex().equals((Sex.WOMEN)) && person.getAge() < MAX_PENSION_AGE_WOMEN) return true;
+                    return false;
+                })
                 .sorted(personComparator)
                 .forEach(System.out::println);
     }

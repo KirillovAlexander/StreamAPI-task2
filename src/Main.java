@@ -44,8 +44,9 @@ public class Main {
 
     private static void findMinorPersons(Collection<Person> persons) {
         Stream<Person> stream = persons.stream();
-        System.out.println("Количество совершеннолетних: " + stream.filter(person -> person.getAge() > MINOR_AGE)
-                .count());
+        long countMinorPersons = stream.filter(person -> person.getAge() > MINOR_AGE)
+                .count();
+        System.out.println("Количество совершеннолетних: " + countMinorPersons);
     }
 
     private static void findSoldiers(Collection<Person> persons) {
@@ -53,10 +54,9 @@ public class Main {
         List<String> soldiers = stream.filter(person -> person.getSex().equals(Sex.MAN))
                 .filter(person -> {
                     int age = person.getAge();
-                    if (age > MINOR_AGE && age < MAX_SOLDIER_AGE) return true;
-                    return false;
+                    return age > MINOR_AGE && age < MAX_SOLDIER_AGE;
                 })
-                .map(person -> person.getFamily())
+                .map(Person::getFamily)
                 .collect(Collectors.toList());
         System.out.println("Призывники: ");
         for (String soldierFamily : soldiers) {
@@ -66,14 +66,12 @@ public class Main {
 
     private static void potentiallyWorkablePersons(Collection<Person> persons) {
         Stream<Person> stream = persons.stream();
-        Comparator<Person> personComparator = (person1, person2) -> person1.getFamily().compareTo(person2.getFamily());
+        Comparator<Person> personComparator = Comparator.comparing(Person::getFamily);
         List<Person> workablePersons = stream.filter(person -> {
             int age = person.getAge();
             if (age < MINOR_AGE || !person.getEducation().equals(Education.HIGHER)) return false;
-            if ((person.getSex().equals(Sex.MAN) && age < MAX_PENSION_AGE_MAN)
-                    || (person.getSex().equals(Sex.WOMEN) && age < MAX_PENSION_AGE_WOMEN))
-                return true;
-            return false;
+            return (person.getSex().equals(Sex.MAN) && age < MAX_PENSION_AGE_MAN)
+                    || (person.getSex().equals(Sex.WOMEN) && age < MAX_PENSION_AGE_WOMEN);
         })
                 .sorted(personComparator)
                 .collect(Collectors.toList());

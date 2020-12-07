@@ -52,10 +52,8 @@ public class Main {
     private static void findSoldiers(Collection<Person> persons) {
         Stream<Person> stream = persons.stream();
         List<String> soldiers = stream.filter(person -> person.getSex().equals(Sex.MAN))
-                .filter(person -> {
-                    int age = person.getAge();
-                    return age > MINOR_AGE && age < MAX_SOLDIER_AGE;
-                })
+                .filter(person -> person.getAge() > MINOR_AGE)
+                .filter(person -> person.getAge() < MAX_SOLDIER_AGE)
                 .map(Person::getFamily)
                 .collect(Collectors.toList());
         System.out.println("Призывники: ");
